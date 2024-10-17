@@ -69,8 +69,7 @@ class RS_NAND:
 class Gated_RS_NOR(RS_NOR):
     def signal(self, R_not, S_not, CLK):
         """Handles gated RS-NOR signal logic."""
-        if CLK == 0:  # Only respond to signal if CLK is active low
-            super().signal(not R_not, not S_not)
+        super().signal(not(R_not and CLK), not(S_not and CLK))
 
     def signal_sequence(self, R_not_seq, S_not_seq, CLK_seq):
         """Processes a sequence of R_not, S_not, and CLK signals."""
@@ -85,8 +84,7 @@ class Gated_RS_NOR(RS_NOR):
 class Gated_RS_NAND(RS_NAND):
     def signal(self, R, S, CLK):
         """Handles gated RS-NAND signal logic."""
-        if CLK == 1:  # Only respond to signal if CLK is active
-            super().signal(not R, not S)
+        super().signal(not(R and CLK), not(S and CLK))
 
     def signal_sequence(self, R_seq, S_seq, CLK_seq):
         """Processes a sequence of R, S, and CLK signals."""
@@ -122,10 +120,10 @@ class Double_RS_NAND:
 
 
 # Example usage
-clk_seq = "1001100110"
-r_seq = "0111110000"
-s_seq = "1100001100"
+# clk_seq = "1001100110"
+# r_seq = "1011011011"
+# s_seq = "1011000011"
 
-latch = Double_RS_NAND()
-for state_name, state_value in latch.signal_sequence(r_seq, s_seq, clk_seq).items():
-    print(f'{state_name}: {state_value}')
+# latch = Gated_RS_NAND()
+# for state_name, state_value in latch.signal_sequence(r_seq, s_seq, clk_seq).items():
+#     print(f'{state_name}: {state_value}')
