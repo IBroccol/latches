@@ -21,11 +21,11 @@ class RS_NOR:
 
     def signal_sequence(self, R_seq, S_seq):
         """Processes a sequence of R and S signals."""
-        ans = {"Q": '', "Q_not": ''}
+        ans = {"Q": '', "#Q": ''}
         for R, S in zip(map(int, R_seq), map(int, S_seq)):
             self.signal(R, S)
             ans["Q"] += self.state()[0]
-            ans["Q_not"] += self.state()[1]
+            ans["#Q"] += self.state()[1]
         return ans
 
     def state(self):
@@ -55,11 +55,11 @@ class RS_NAND:
 
     def signal_sequence(self, R_not_seq, S_not_seq):
         """Processes a sequence of R_not and S_not signals."""
-        ans = {"Q": '', "Q_not": ''}
+        ans = {"Q": '', "#Q": ''}
         for R_not, S_not in zip(map(int, R_not_seq), map(int, S_not_seq)):
             self.signal(R_not, S_not)
             ans["Q"] += self.state()[0]
-            ans["Q_not"] += self.state()[1]
+            ans["#Q"] += self.state()[1]
         return ans
 
     def state(self):
@@ -73,11 +73,11 @@ class Gated_RS_NOR(RS_NOR):
 
     def signal_sequence(self, R_not_seq, S_not_seq, CLK_seq):
         """Processes a sequence of R_not, S_not, and CLK signals."""
-        ans = {"Q": '', "Q_not": ''}
+        ans = {"Q": '', "#Q": ''}
         for R_not, S_not, CLK in zip(map(int, R_not_seq), map(int, S_not_seq), map(int, CLK_seq)):
             self.signal(R_not, S_not, CLK)
             ans["Q"] += self.state()[0]
-            ans["Q_not"] += self.state()[1]
+            ans["#Q"] += self.state()[1]
         return ans
 
 
@@ -88,17 +88,17 @@ class Gated_RS_NAND(RS_NAND):
 
     def signal_sequence(self, R_seq, S_seq, CLK_seq):
         """Processes a sequence of R, S, and CLK signals."""
-        ans = {"Q": '', "Q_not": ''}
+        ans = {"Q": '', "#Q": ''}
         for R, S, CLK in zip(map(int, R_seq), map(int, S_seq), map(int, CLK_seq)):
             self.signal(R, S, CLK)
             ans["Q"] += self.state()[0]
-            ans["Q_not"] += self.state()[1]
+            ans["#Q"] += self.state()[1]
         return ans
 
 
 class Double_RS_NAND:
     def __init__(self, Q=0, Q_not=1):
-        self.latch1 = Gated_RS_NAND(1, 1)  # First stage latch
+        self.latch1 = Gated_RS_NAND()  # First stage latch
         self.latch2 = Gated_RS_NAND(Q, Q_not)  # Second stage latch
 
     def signal(self, R, S, CLK):
@@ -108,21 +108,19 @@ class Double_RS_NAND:
 
     def signal_sequence(self, R_seq, S_seq, CLK_seq):
         """Processes a sequence of R, S, and CLK signals."""
-        ans = {"Q": '', "Q_not": ''}
+        ans = {"Q": '', "#Q": ''}
         for R, S, CLK in zip(map(int, R_seq), map(int, S_seq), map(int, CLK_seq)):
             self.signal(R, S, CLK)
             ans["Q"] += self.state()[0]
-            ans["Q_not"] += self.state()[1]
+            ans["#Q"] += self.state()[1]
         return ans
 
     def state(self):
         return str(self.latch2.Q), str(self.latch2.Q_not)
 
-
-# Example usage
 # clk_seq = "1001100110"
-# r_seq = "1011011011"
-# s_seq = "1011000011"
+# r_seq = "1111110101"
+# s_seq = "0011100111"
 
 # latch = Gated_RS_NAND()
 # for state_name, state_value in latch.signal_sequence(r_seq, s_seq, clk_seq).items():

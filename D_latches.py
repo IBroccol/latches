@@ -6,11 +6,11 @@ class D_static(RS_latches.Gated_RS_NAND):
     
     def signal_sequence(self, D_seq, CLK_seq):
         """Processes a sequence of D, and CLK signals."""
-        ans = {"Q": '', "Q_not": ''}
+        ans = {"Q": '', "#Q": ''}
         for D, CLK in zip(map(int, D_seq), map(int, CLK_seq)):
             self.signal(D, CLK)
             ans["Q"] += self.state()[0]
-            ans["Q_not"] += self.state()[1]
+            ans["#Q"] += self.state()[1]
         return ans
     
 class D_dynamic:
@@ -25,11 +25,11 @@ class D_dynamic:
 
     def signal_sequence(self, D_seq, CLK_seq):
         """Processes a sequence of D, and CLK signals."""
-        ans = {"Q": '', "Q_not": ''}
+        ans = {"Q": '', "#Q": ''}
         for D, CLK in zip(map(int, D_seq), map(int, CLK_seq)):
             self.signal(D, CLK)
             ans["Q"] += self.state()[0]
-            ans["Q_not"] += self.state()[1]
+            ans["#Q"] += self.state()[1]
         return ans
 
     def state(self):
@@ -37,7 +37,7 @@ class D_dynamic:
     
 class Double_D_NAND:
     def __init__(self, Q=0, Q_not=1):
-        self.latch1 = D_static(1, 1)  # First stage latch
+        self.latch1 = D_static()  # First stage latch
         self.latch2 = D_static(Q, Q_not)  # Second stage latch
 
     def signal(self, D, CLK):
@@ -47,20 +47,18 @@ class Double_D_NAND:
 
     def signal_sequence(self, D_seq, CLK_seq):
         """Processes a sequence of D, and CLK signals."""
-        ans = {"Q": '', "Q_not": ''}
+        ans = {"Q": '', "#Q": ''}
         for D, CLK in zip(map(int, D_seq), map(int, CLK_seq)):
             self.signal(D, CLK)
             ans["Q"] += self.state()[0]
-            ans["Q_not"] += self.state()[1]
+            ans["#Q"] += self.state()[1]
         return ans
 
     def state(self):
         return str(self.latch2.Q), str(self.latch2.Q_not)
     
-# Example usage
 # clk_seq = "1001100110"
-# d_seq = "0010111100"
-
+# d_seq = "1110101100"
 
 # latch = Double_D_NAND()
 # for state_name, state_value in latch.signal_sequence(d_seq, clk_seq).items():
